@@ -4,10 +4,11 @@ var db 				= require('../config/config'),
 
 /*============== SET SCHEMA RELATIONSHIPS ==============*/
 var Source = db.Model.extend({
-	tablename: 'sources',
+	tableName: 'sources',
 	listings: function(){
 		return this.hasMany(Listing);
 	}
 });
 
+/*=================== EXPORT MODULE ===================*/
 module.exports = Source;

@@ -26,8 +26,8 @@ var NavBar = React.createClass({
           <ToolbarGroup key={1} float="left">
              <DropDownMenu menuItems={filterOptions} />
           </ToolbarGroup>
-          <ToolbarGroup key={2} float="right">
-             <RaisedButton label="Login" linkButton={true} primary={true} href="/login" />
+          <ToolbarGroup className="login" key={2} float="right">
+             <RaisedButton label="Log out" linkButton={true} primary={true} href="/login" />
           </ToolbarGroup>
         </Toolbar>
       );

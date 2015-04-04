@@ -5,14 +5,15 @@ var db 				= require('../config/config'),
 
 /*============== SET SCHEMA RELATIONSHIPS ==============*/
 var JobSkill = db.Model.extend({
-	tablename: 'listings_skills',
+	tableName: 'listings_skills',
 	hasTimestamps: true,
 	listings: function(){
-		return this.belongsTo(Listing, 'job_id');
+		return this.belongsTo(Listing, 'listing_id');
 	},
 	skills: function(){
 		return this.belongsTo(User, 'skill_id');
 	}
 });
 
+/*=================== EXPORT MODULE ===================*/
 module.exports = JobSkill;

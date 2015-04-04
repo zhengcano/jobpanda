@@ -1,19 +1,31 @@
+// IMPORTANT
+// Bookshelf is pretty inflexible about column names and relationships.
+// We didn't have time to test, but because we used 'tablename_id' instead of
+// just 'id' for the primary key of each table, bookshelf-defined relationships
+// did not work. There may be value in renaming all primary keys simply to 'id'
+// and letting bookshelf do most of the relationship work. 
+
 /*==================== REQUIRE DEPENDENCIES ====================*/
 var Bookshelf = require('bookshelf');
 var path = require('path');
-var mysql = require('mysql');
+// var mysql = require('mysql');
 
 /*====== INITIALIZE BOOKSHELF CONNECTION TO POSTGRESS DB ======*/
 var db = Bookshelf.initialize({
 	client: 'mysql',
 	connection: {
-		host: process.env.CLEARDB_DATABASE_HOST || 'localhost'/*Local Host for testing, ENV host for deployment*/,
-		user: process.env.CLEARDB_USER || 'test_user',
-		password: process.env.CLEARDB_PW || 'password',
-		database: process.env.PG_DB || 'jobpanda',
+		host: process.env.CLEARDB_HOST || 'localhost'/*Local Host for testing, ENV host for deployment*/,
+		user: process.env.CLEARDB_USER || 'root',
+		password: process.env.CLEARDB_PW || 'hello',
+		database: process.env.CLEARDB_DB || 'jobpanda',
 		charset: 'utf8'
 	}
 });
+
+//Bookshelf has poor out-of-box support for many-to-many relationships
+//registry plug-in is needed for bookshelf defined many-to-many's
+//besides plugin dependency, registry plugin code is not yet implemented in model files
+db.plugin('registry');
 
 /*================ INITIALIZE TABLES WITH KNEX ================*/
 //Initialize listings table if it doesn't already exist
@@ -121,40 +133,42 @@ db.knex.schema.hasTable('users').then(function(exists) {
     db.knex.schema.createTable('users', function (user) {
       user.increments('user_id').primary();
       user.string('user_name', 255);
+      user.string('password', 255);
     }).then(function (table) {
       console.log('Created Table', table);
     });
   }
 });
 
-//Initialize jobs_users table if it doesn't already exist
-db.knex.schema.hasTable('jobs_users').then(function(exists) {
+//Initialize listings_users table if it doesn't already exist
+db.knex.schema.hasTable('listings_users').then(function(exists) {
   if (!exists) {
-    db.knex.schema.createTable('jobs_users', function (application) {
+    db.knex.schema.createTable('listings_users', function (application) {
       application.increments('id').primary();
       application.integer('user_id');
-      application.integer('job_id');
+      application.integer('listing_id');
       application.string('status', 100);
-      application.timestamp();
+      application.timestamp('created');
     }).then(function (table) {
       console.log('Created Table', table);
     });
   }
 });
 
+//Initialize listings_skills table if it doesn't already exist
 db.knex.schema.hasTable('listings_skills').then(function(exists) {
   if (!exists) {
-    db.knex.schema.createTable('jobs_users', function (application) {
+    db.knex.schema.createTable('listings_skills', function (application) {
       application.increments('id').primary();
       application.integer('listing_id');
       application.integer('skill_id');
-      application.timestamp();
     }).then(function (table) {
       console.log('Created Table', table);
     });
   }
 });
 
+//Initialize skills table if it doesn't already exist
 db.knex.schema.hasTable('skills').then(function(exists) {
   if (!exists) {
     db.knex.schema.createTable('skills', function (skill) {
